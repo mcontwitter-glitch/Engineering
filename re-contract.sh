@@ -2,7 +2,7 @@
 # Read-only EVM contract RE. Usage: re-contract.sh <address> <rpc-url> [outdir]
 set -euo pipefail
 addr=$1; rpc=$2
-out=${3:-/workspace/re-out/$addr-$(date +%Y%m%d-%H%M%S)}; mkdir -p "$out"
+out=${3:-./re-out/$addr-$(date +%Y%m%d-%H%M%S)}; mkdir -p "$out"
 rpccall(){ curl -s -X POST -H 'content-type: application/json' --data "$1" "$rpc" | python3 -c 'import sys,json;print(json.load(sys.stdin).get("result",""))'; }
 analyze(){ # $1 addr  $2 dir
   local a=$1 d=$2; mkdir -p "$d"

@@ -2,7 +2,7 @@
 # Read-only binary RE via Ghidra headless. Usage: re-binary.sh <file> [outdir]
 set -euo pipefail
 f=$(readlink -f "$1"); name=$(basename "$f")
-out=${2:-/workspace/re-out/$name-$(date +%Y%m%d-%H%M%S)}; mkdir -p "$out"; out=$(readlink -f "$out")
+out=${2:-./re-out/$name-$(date +%Y%m%d-%H%M%S)}; mkdir -p "$out"; out=$(readlink -f "$out")
 export JAVA_HOME=/opt/jdk/current MAXMEM=${MAXMEM:-2G}
 here=$(dirname "$(readlink -f "$0")"); proj=$(mktemp -d)
 /opt/ghidra/current/support/analyzeHeadless "$proj" re -import "$f" -scriptPath "$here" \
