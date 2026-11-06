@@ -4,6 +4,10 @@ Public, downloadable reverse-engineering toolkit. Clone or grab a [release](http
 
 Analysis itself is read-only (no transactions, no private keys). Contract scripts only call `eth_getCode` / `eth_getStorageAt`.
 
+## MC install guide
+
+Step-by-step install instructions live in [`MC install guide.md`](./MC%20install%20guide.md).
+
 ## Quick start
 
 ```bash
