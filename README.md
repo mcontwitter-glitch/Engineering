@@ -1,31 +1,41 @@
 # Engineering
 
-Public, downloadable reverse-engineering toolkit. Clone or grab a release zip/tarball and run it on your machine.
+Public, downloadable reverse-engineering toolkit. Clone or grab a [release](https://github.com/mcontwitter-glitch/Engineering/releases), run the installers, then decompile binaries and contracts on your machine.
 
 Analysis itself is read-only (no transactions, no private keys). Contract scripts only call `eth_getCode` / `eth_getStorageAt`.
 
-## Download
+## Quick start
 
-- **Clone:** `git clone https://github.com/mcontwitter-glitch/Engineering.git`
-- **Release:** see [Releases](https://github.com/mcontwitter-glitch/Engineering/releases) for a ready archive
+```bash
+git clone https://github.com/mcontwitter-glitch/Engineering.git
+cd Engineering
+./install.sh          # JDK 25 + Ghidra 12.2 + Heimdall (may need sudo)
+# or: ./install.sh --user   # installs under ~/.local, no sudo
+source ./env.sh       # written by install.sh
+./re-binary.sh /bin/ls
+./re-contract.sh 0xAddress https://eth.llamarpc.com
+```
 
-## What you need installed locally
+## Install scripts (download the engines)
 
-- JDK 25+ (Ghidra 12.2 needs Java 25)
-- [Ghidra](https://github.com/NationalSecurityAgency/ghidra/releases) 12.2 at `/opt/ghidra/current` (or edit the scripts)
-- [Heimdall](https://github.com/Jon-Becker/heimdall-rs/releases) at `/usr/local/bin/heimdall`
-- `pycryptodome` for `compare-source.py` (`pip install pycryptodome`)
+| Script | What it installs |
+|---|---|
+| `install.sh` | Full setup (JDK + Ghidra + Heimdall + pycryptodome) |
+| `install-jdk.sh` | Temurin JDK 25 → `/opt/jdk` (or `PREFIX=...`) |
+| `install-ghidra.sh` | Official Ghidra 12.2 PUBLIC → `/opt/ghidra` |
+| `install-heimdall.sh` | Heimdall 0.9.3 binary → `/usr/local/bin` |
+
+These scripts pull the official release archives from GitHub / Adoptium. The heavy engines are **not** stored in this repo (Ghidra alone is ~540MB).
 
 ## Usage
 
 ```bash
 ./re-binary.sh <file> [outdir]            # Ghidra: decompiled.c, functions.txt, imports.txt, strings.txt
 ./re-contract.sh <address> <rpc> [outdir] # bytecode, asm, decompiled.sol, abi, selectors
-                                          # EIP-1967 proxy → also analyzes implementation/
 ./compare-source.py <outdir> <Source.sol> # map selectors back to source names
 ```
 
-Default output directory: `./re-out/<name>-<timestamp>/` (override with the optional outdir arg).
+Default output: `./re-out/<name>-<timestamp>/`
 
 ## Example RPCs
 
@@ -41,3 +51,4 @@ Default output directory: `./re-out/<name>-<timestamp>/` (override with the opti
 - Heimdall resolves names only for known signatures; custom functions show as `Unresolved_<selector>`.
 - `compare-source.py` does not expand struct params into tuples.
 - Only follows the EIP-1967 implementation slot (not beacon proxies, diamonds, or EIP-1167 clones).
+- Ghidra EVM plugin is not included (current public plugins do not support Ghidra 12.2).
