@@ -3,7 +3,24 @@
 set -euo pipefail
 addr=$1; rpc=$2
 out=${3:-./re-out/$addr-$(date +%Y%m%d-%H%M%S)}; mkdir -p "$out"
-rpccall(){ curl -s -X POST -H 'content-type: application/json' --data "$1" "$rpc" | python3 -c 'import sys,json;print(json.load(sys.stdin).get("result",""))'; }
+rpccall(){ # $1 json body → prints result or fails with HTTP status
+  local body=$1 tmp code
+  tmp=$(mktemp)
+  code=$(curl -sS -o "$tmp" -w '%{http_code}' -X POST -H 'content-type: application/json' --data "$body" "$rpc" || echo curl_fail)
+  if [[ "$code" != "200" ]]; then
+    echo "RPC HTTP $code from $rpc" >&2
+    head -c 400 "$tmp" >&2; echo >&2
+    if [[ "$code" == "402" ]]; then
+      echo "402 Payment Required means this RPC wants payment (x402 / paid provider)." >&2
+      echo "Use a free public RPC instead, e.g. https://ethereum.publicnode.com" >&2
+    fi
+    rm -f "$tmp"; return 1
+  fi
+  python3 -c 'import sys,json;d=json.load(open(sys.argv[1]));
+e=d.get("error");
+sys.exit("RPC error: "+str(e)) if e else print(d.get("result",""))' "$tmp"
+  rm -f "$tmp"
+}
 analyze(){ # $1 addr  $2 dir
   local a=$1 d=$2; mkdir -p "$d"
   local code; code=$(rpccall "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getCode\",\"params\":[\"$a\",\"latest\"]}")
@@ -12,7 +29,6 @@ analyze(){ # $1 addr  $2 dir
   echo "[$a] $(( (${#code}-2)/2 )) bytes"
   heimdall disassemble "$code" -o "$d" >"$d/heimdall-disasm.log" 2>&1 || echo "  disassemble failed (see log)"
   heimdall decompile "$code" --include-sol -o "$d" >"$d/heimdall-decompile.log" 2>&1 || echo "  decompile failed (see log)"
-  # selectors: PUSH4 values from disassembly (best effort)
   grep -hoE 'PUSH4 (0x)?[0-9a-f]{8}' "$d"/*.asm 2>/dev/null | awk '{sub(/^0x/,"",$2);print $2}' | sort -u > "$d/selectors.txt" || true
   echo "  files: $(ls "$d" | tr '\n' ' ')"
 }

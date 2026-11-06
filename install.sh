@@ -51,4 +51,4 @@ echo
 echo "Install complete."
 echo "  source $ENVF"
 echo "  ./re-binary.sh /path/to/binary"
-echo "  ./re-contract.sh 0xAddress https://eth.llamarpc.com"
+echo "  ./re-contract.sh 0xAddress https://ethereum.publicnode.com"

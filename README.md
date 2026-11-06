@@ -17,7 +17,7 @@ cd Engineering
 # or: ./install.sh --user   # installs under ~/.local, no sudo
 source ./env.sh       # written by install.sh
 ./re-binary.sh /bin/ls
-./re-contract.sh 0xAddress https://eth.llamarpc.com
+./re-contract.sh 0xAddress https://ethereum.publicnode.com
 ```
 
 ## Install scripts (download the engines)
@@ -44,7 +44,7 @@ Default output: `./re-out/<name>-<timestamp>/`
 ## Example RPCs
 
 - Abstract (2741): `https://api.mainnet.abs.xyz`
-- Ethereum (1): `https://eth.llamarpc.com`
+- Ethereum (1): `https://ethereum.publicnode.com`
 - Base (8453): `https://mainnet.base.org`
 - BNB (56): `https://bsc-dataseed.binance.org`
 - ApeChain (33139): `https://rpc.apechain.com/http`

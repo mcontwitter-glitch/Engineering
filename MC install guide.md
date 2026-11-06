@@ -67,7 +67,7 @@ ls "$GHIDRA_HOME"      # Ghidra tree
 **Contract (Heimdall, read-only RPC):**
 
 ```bash
-./re-contract.sh 0xYourContract https://eth.llamarpc.com
+./re-contract.sh 0xYourContract https://ethereum.publicnode.com
 ```
 
 **Match decompiled selectors to Solidity source:**
@@ -84,11 +84,26 @@ ls "$GHIDRA_HOME"      # Ghidra tree
 - Default paths after a system install: `/opt/jdk/current`, `/opt/ghidra/current`, `/usr/local/bin/heimdall`.
 - After every new shell, run `source ./env.sh` (or add those exports to your shell profile).
 
+
+## If you see HTTP 402
+
+`402 Payment Required` is **not** from this toolkit charging you. It means the **RPC URL you passed** is a pay-per-call / x402 endpoint (or a paid provider that refuses free anonymous calls).
+
+Fix: pass a free public RPC as the second argument, for example:
+
+```bash
+./re-contract.sh 0xYourContract https://ethereum.publicnode.com
+./re-contract.sh 0xYourContract https://1rpc.io/eth
+./re-contract.sh 0xYourContract https://cloudflare-eth.com
+```
+
+Do **not** use `https://402rpc.com/...` or other x402 URLs unless you intentionally want to pay per call.
+
 ## Example RPCs
 
 | Chain | RPC |
 |---|---|
-| Ethereum | `https://eth.llamarpc.com` |
+| Ethereum | `https://ethereum.publicnode.com` |
 | Base | `https://mainnet.base.org` |
 | BNB | `https://bsc-dataseed.binance.org` |
 | Abstract | `https://api.mainnet.abs.xyz` |
